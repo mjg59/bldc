@@ -1888,59 +1888,42 @@ static void update_override_limits(volatile motor_if_state_t *motor, volatile mc
 #endif
 
 	const float l_current_min_tmp = conf->l_current_min * conf->l_current_min_scale;
-	const float l_current_max_tmp = conf->l_current_max * conf->l_current_max_scale;
+	float l_current_max_tmp = conf->l_current_max * conf->l_current_max_scale;
 
 	// Temperature MOSFET
 	float lo_min_mos = l_current_min_tmp;
 	float lo_max_mos = l_current_max_tmp;
-	if (motor->m_temp_fet < conf->l_temp_fet_start) {
-		// Keep values
-	} else if (motor->m_temp_fet > conf->l_temp_fet_end) {
-		lo_min_mos = 0.0;
-		lo_max_mos = 0.0;
-		mc_interface_fault_stop(FAULT_CODE_OVER_TEMP_FET, !is_motor_1, false);
-	} else {
+
+	// If the temperature is between l_temp_fet_start and end, scale
+	// l_current_max_tmp linearly between a boosted value (at
+	// l_temp_fet_start) and the standard value (at l_temp_fet_end). If
+	// the temperature is outside this range, do nothing.
+
+	// HACK: use l_temp_motor_start to indicate the maximum current when
+	// at a low temperature. This value will be used when the temperature
+	// is at l_temp_fet_start, and will scale down to the normal value
+	// at l_temp_fet_end. If the temperature is below l_temp_fet_start,
+	// the normal maximum temperature will be used - this protects against
+	// cases where the temperature sensor incorrectly reports low values.
+	int boost_current = conf->l_temp_motor_start;
+
+	if ((motor->m_temp_fet >= conf->l_temp_fet_start) &&
+	    (motor->m_temp_fet <= conf->l_temp_fet_end)) {
 		float maxc = fabsf(l_current_max_tmp);
-		if (fabsf(l_current_min_tmp) > maxc) {
-			maxc = fabsf(l_current_min_tmp);
-		}
-
-		maxc = utils_map(motor->m_temp_fet, conf->l_temp_fet_start, conf->l_temp_fet_end, maxc, 0.0);
-
-		if (fabsf(l_current_min_tmp) > maxc) {
-			lo_min_mos = SIGN(l_current_min_tmp) * maxc;
-		}
-
-		if (fabsf(l_current_max_tmp) > maxc) {
-			lo_max_mos = SIGN(l_current_max_tmp) * maxc;
-		}
+		maxc = utils_map(motor->m_temp_fet, conf->l_temp_fet_start, conf->l_temp_fet_end, boost_current, maxc);
+		l_current_max_tmp = maxc;
+		lo_max_mos = l_current_max_tmp;
 	}
 
-	// Temperature MOTOR
+	// Temperature MOTOR. This is disabled, but set these variables to
+	// minimise having to make too many other changes to the code
+	// further down.
 	float lo_min_mot = l_current_min_tmp;
+
+	// If the FET limits were set to a higher value based on the
+	// temperature, l_current_max_tmp has also been set to that higher
+	// temperature.
 	float lo_max_mot = l_current_max_tmp;
-	if (motor->m_temp_motor < conf->l_temp_motor_start) {
-		// Keep values
-	} else if (motor->m_temp_motor > conf->l_temp_motor_end) {
-		lo_min_mot = 0.0;
-		lo_max_mot = 0.0;
-		mc_interface_fault_stop(FAULT_CODE_OVER_TEMP_MOTOR, !is_motor_1, false);
-	} else {
-		float maxc = fabsf(l_current_max_tmp);
-		if (fabsf(l_current_min_tmp) > maxc) {
-			maxc = fabsf(l_current_min_tmp);
-		}
-
-		maxc = utils_map(motor->m_temp_motor, conf->l_temp_motor_start, conf->l_temp_motor_end, maxc, 0.0);
-
-		if (fabsf(l_current_min_tmp) > maxc) {
-			lo_min_mot = SIGN(l_current_min_tmp) * maxc;
-		}
-
-		if (fabsf(l_current_max_tmp) > maxc) {
-			lo_max_mot = SIGN(l_current_max_tmp) * maxc;
-		}
-	}
 
 	// Decreased temperatures during acceleration
 	// in order to still have braking torque available
