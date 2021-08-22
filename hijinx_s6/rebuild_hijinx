@@ -1,0 +1,91 @@
+#!/bin/bash
+set -e
+
+FWPATH="../"
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+#################### HW 75_300 (Drive) ########################
+
+COPYDIR=HIJINX_DRIVE_75_300
+rm -f $COPYDIR/*
+
+# default
+cd $FWPATH
+touch conf_general.h
+make -j8 build_args='-DHW_SOURCE=\"hw_75_300.c\" -DHW_HEADER=\"hw_75_300.h\" -DHIJINX_DRIVE' USE_VERBOSE_COMPILE=no
+cd $DIR
+cp $FWPATH/build/BLDC_4_ChibiOS.bin $COPYDIR/VESC_default.bin
+
+# Clean
+cd $FWPATH
+make clean
+cd $DIR
+
+#################### HW 75_300_R2 (Weapon) ########################
+
+COPYDIR=HIJINX_WEAPON_75_300_R2
+rm -f $COPYDIR/*
+
+# default
+cd $FWPATH
+touch conf_general.h
+make -j8 build_args='-DHW_SOURCE=\"hw_75_300.c\" -DHW_HEADER=\"hw_75_300.h\" -DHW75_300_REV_2  -DHIJINX_WEAPON' USE_VERBOSE_COMPILE=no
+cd $DIR
+cp $FWPATH/build/BLDC_4_ChibiOS.bin $COPYDIR/VESC_default.bin
+
+# Clean
+cd $FWPATH
+make clean
+cd $DIR
+
+#################### HW 75_300_R2 (Weapon Boost) ########################
+
+COPYDIR=HIJINX_WEAPON_BOOST_75_300_R2
+rm -f $COPYDIR/*
+
+# default
+cd $FWPATH
+touch conf_general.h
+make -j8 build_args='-DHW_SOURCE=\"hw_75_300.c\" -DHW_HEADER=\"hw_75_300.h\" -DHW75_300_REV_2 -DHIJINX_WEAPON -DBOOST_CURRENT' USE_VERBOSE_COMPILE=no
+cd $DIR
+cp $FWPATH/build/BLDC_4_ChibiOS.bin $COPYDIR/VESC_default.bin
+
+# Clean
+cd $FWPATH
+make clean
+cd $DIR
+
+#################### HW 75_300_R3 (Weapon) ########################
+
+COPYDIR=HIJINX_WEAPON_75_300_R3
+rm -f $COPYDIR/*
+
+# default
+cd $FWPATH
+touch conf_general.h
+make -j8 build_args='-DHW_SOURCE=\"hw_75_300.c\" -DHW_HEADER=\"hw_75_300.h\" -DHW75_300_REV_3 -DHIJINX_WEAPON' USE_VERBOSE_COMPILE=no
+cd $DIR
+cp $FWPATH/build/BLDC_4_ChibiOS.bin $COPYDIR/VESC_default.bin
+
+# Clean
+cd $FWPATH
+make clean
+cd $DIR
+
+#################### HW 75_300_R3 (Weapon Boost) ########################
+
+COPYDIR=HIJINX_WEAPON_BOOST_75_300_R3
+rm -f $COPYDIR/*
+
+# default
+cd $FWPATH
+touch conf_general.h
+make -j8 build_args='-DHW_SOURCE=\"hw_75_300.c\" -DHW_HEADER=\"hw_75_300.h\" -DHW75_300_REV_3 -DHIJINX_WEAPON -DBOOST_CURRENT' USE_VERBOSE_COMPILE=no
+cd $DIR
+cp $FWPATH/build/BLDC_4_ChibiOS.bin $COPYDIR/VESC_default.bin
+
+# Clean
+cd $FWPATH
+make clean
+cd $DIR
+
