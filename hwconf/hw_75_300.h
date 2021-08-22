@@ -24,7 +24,7 @@
 #define HW_NAME					"Drive"
 
 #elif defined(HW75_300_REV_3)
-#if defined(HIJINX_WEAPON) && defined(CURRENT_BOOST)
+#if defined(HIJINX_WEAPON) && defined(BOOST_CURRENT)
 #define HW_NAME					"Weapon_Boost_R3"
 #elif defined(HIJINX_WEAPON)
 #define HW_NAME					"Weapon_R3"
@@ -33,7 +33,7 @@
 #endif
 
 #elif defined(HW75_300_REV_2)
-#if defined(HIJINX_WEAPON) && defined(CURRENT_BOOST)
+#if defined(HIJINX_WEAPON) && defined(BOOST_CURRENT)
 #define HW_NAME					"Weapon_Boost_R2"
 #elif defined(HIJINX_WEAPON)
 #define HW_NAME					"Weapon_R2"
