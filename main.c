@@ -138,7 +138,7 @@ static THD_FUNCTION(periodic_thread, arg) {
 			ledpwm_set_intensity(LED_RED, 1.0);
 			ledpwm_set_intensity(LED_GREEN, 1.0);
 #else
-            ledpwm_set_intensity(LED_RED, 0.0);
+			ledpwm_set_intensity(LED_RED, 0.0);
 #endif
 		}
 
