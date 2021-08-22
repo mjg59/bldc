@@ -1905,7 +1905,11 @@ static void update_override_limits(volatile motor_if_state_t *motor, volatile mc
 	// at l_temp_fet_end. If the temperature is below l_temp_fet_start,
 	// the normal maximum temperature will be used - this protects against
 	// cases where the temperature sensor incorrectly reports low values.
+#ifdef BOOST_CURRENT
 	int boost_current = conf->l_temp_motor_start;
+#else
+	int boost_current = l_current_max_tmp;
+#endif
 
 	if ((motor->m_temp_fet >= conf->l_temp_fet_start) &&
 	    (motor->m_temp_fet <= conf->l_temp_fet_end)) {
