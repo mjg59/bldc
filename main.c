@@ -134,7 +134,7 @@ static THD_FUNCTION(periodic_thread, arg) {
 
 			chThdSleepMilliseconds(500);
 		} else {
-#ifdef CURRENT_BOOST
+#ifdef BOOST_CURRENT
 			ledpwm_set_intensity(LED_RED, 1.0);
 			ledpwm_set_intensity(LED_GREEN, 1.0);
 #else
