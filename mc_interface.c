@@ -83,6 +83,8 @@ typedef struct {
 	float m_motor_current_unbalance;
 	float m_motor_current_unbalance_error_rate;
 	float m_f_samp_now;
+	float m_abs_current_high;
+	float m_abs_current_filtered_high;
 } motor_if_state_t;
 
 // Private variables
@@ -1273,6 +1275,18 @@ float mc_interface_read_reset_avg_vq(void) {
 	return DIR_MULT * res;
 }
 
+float mc_interface_read_reset_abs_current_high(void) {
+	float res = motor_now()->m_abs_current_high;
+	motor_now()->m_abs_current_high = 0.0;
+	return res;
+}
+
+float mc_interface_read_reset_abs_current_filtered_high(void) {
+	float res = motor_now()->m_abs_current_filtered_high;
+	motor_now()->m_abs_current_filtered_high = 0.0;
+	return res;
+}
+
 float mc_interface_get_pid_pos_set(void) {
 	return motor_now()->m_position_set;
 }
@@ -1614,6 +1628,14 @@ void mc_interface_mc_timer_isr(bool is_second_motor) {
 	motor->m_motor_vq_sum += mcpwm_foc_get_vq();
 	motor->m_motor_vd_iterations++;
 	motor->m_motor_vq_iterations++;
+
+	if (fabsf(abs_current) > motor->m_abs_current_high) {
+		motor->m_abs_current_high = fabsf(abs_current);
+	}
+
+	if (fabsf(abs_current_filtered) > motor->m_abs_current_filtered_high) {
+		motor->m_abs_current_filtered_high = fabsf(abs_current_filtered);
+	}
 
 	// Current fault code
 	if (conf_now->l_slow_abs_current) {

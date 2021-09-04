@@ -389,6 +389,8 @@ void commands_process_packet(unsigned char *data, unsigned int len,
 			buffer_append_float32(send_buffer, mc_interface_read_reset_avg_vq(), 1e3, &ind);
 		}
 
+		buffer_append_float32(send_buffer, mc_interface_read_reset_abs_current_high(), 1e2, &ind);
+		buffer_append_float32(send_buffer, mc_interface_read_reset_abs_current_filtered_high(), 1e2, &ind);
 		reply_func(send_buffer, ind);
 		chMtxUnlock(&send_buffer_mutex);
 	} break;
