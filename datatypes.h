@@ -1113,6 +1113,8 @@ typedef enum {
 	COMM_BMS_GET_BATT_TYPE,
 
 	COMM_LISP_REPL_CMD,
+
+	COMM_GET_MOTOR_STATE = 250, // Try not to conflict with any new commands
 } COMM_PACKET_ID;
 
 // CAN commands

@@ -56,6 +56,8 @@
 #endif
 #include "main.h"
 
+#include "debug_struct.h"
+
 #include <math.h>
 #include <string.h>
 #include <stdarg.h>
@@ -2352,6 +2354,11 @@ static THD_FUNCTION(blocking_thread, arg) {
 			}
 		} break;
 
+		case COMM_GET_MOTOR_STATE:
+			if (send_func_blocking) {
+				send_func_blocking((uint8_t *)&motor_log_data, sizeof(motor_log_data));
+			}
+			break;
 		default:
 			break;
 		}

@@ -124,7 +124,7 @@ extern const float utils_tab_cos_32_1[];
 extern const float utils_tab_cos_32_2[];
 
 // Inline functions
-inline void utils_step_towards(float *value, float goal, float step) {
+static inline void utils_step_towards(float *value, float goal, float step) {
     if (*value < goal) {
         if ((*value + step) < goal) {
             *value += step;

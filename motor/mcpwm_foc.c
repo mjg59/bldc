@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include "virtual_motor.h"
 #include "foc_math.h"
+#include "debug_struct.h"
 
 // Private variables
 static volatile bool m_dccal_done = false;
@@ -2444,6 +2445,45 @@ void mcpwm_foc_tim_sample_int_handler(void) {
 	}
 }
 
+struct motor_log_data motor_log_data = {{COMM_GET_MOTOR_STATE, {0,}}};
+
+void log_motor_state(motor_all_state_t *motor) {
+	static bool fault_state = false;
+	static short num = 0;
+	static short event = 0;
+	volatile motor_state_t *state_m = &motor->m_motor_state;
+	struct logged_motor_state *motor_log = &motor_log_data.motor_log[event];
+
+	if (fault_state == true) {
+		if (mc_interface_get_fault() == FAULT_CODE_NONE) {
+			fault_state = false;
+			num = 0;
+		} else {
+			return;
+		}
+	}
+
+	motor_log->eventnum = num;
+	motor_log->phase_sin = state_m->phase_sin;
+	motor_log->phase_cos = state_m->phase_cos;
+	motor_log->id_target = state_m->id_target;
+	motor_log->iq_target = state_m->iq_target;
+	motor_log->duty_now = state_m->duty_now;
+	motor_log->v_bus = state_m->v_bus;
+	motor_log->m_duty_cycle_set = motor->m_duty_cycle_set;
+	event++;
+
+	if (event == EVENTS_TO_LOG) {
+		event = 0;
+	}
+
+	// Set at the end so we log the state that triggered the fault
+	if (mc_interface_get_fault() != FAULT_CODE_NONE) {
+		fault_state = true;
+	}
+}
+	
+
 void mcpwm_foc_adc_int_handler(void *p, uint32_t flags) {
 	(void)p;
 	(void)flags;
@@ -3229,6 +3269,7 @@ void mcpwm_foc_adc_int_handler(void *p, uint32_t flags) {
 
 	m_isr_motor = 0;
 	m_last_adc_isr_duration = timer_seconds_elapsed_since(t_start);
+	log_motor_state(motor_now);
 }
 
 // Private functions
